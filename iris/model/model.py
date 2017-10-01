@@ -19,8 +19,11 @@ dataset["Species"].value_counts()
 
 sns.set(style="white", color_codes=True)
 sns.FacetGrid(dataset, hue="Species", size=5).map(plt.scatter, "SepalLengthCm", "SepalWidthCm").add_legend()
+plt.show()
 sns.FacetGrid(dataset, hue="Species", size=5).map(plt.scatter, "PetalLengthCm", "PetalWidthCm").add_legend()
+plt.show()
 radviz(dataset.drop("Id", axis=1), "Species")
+plt.show()
 
 classes = {
    'Iris-setosa' : 0,
@@ -53,8 +56,7 @@ for k in possibleKNeighbors:
     knnModel            = KNeighborsClassifier(n_neighbors=k)
     knnModelTestScores  = cross_val_score(knnModel, X_train, y_train, cv = 10, scoring='accuracy')
     crossValidationScores.append(knnModelTestScores.mean())
-    
-plt.figure()
+
 plt.title('KNN Cross Validation Scores')
 plt.xlabel('Number of neighbors K')
 plt.ylabel('Accuracy')
@@ -119,7 +121,8 @@ for i,j in enumerate(np.unique(y_display)):
                 c = ListedColormap(('red', 'green', 'blue'))(i), 
                 label = classIds[j]
     )
-    
+
+plt.title('SVM on training set')  
 plt.xlabel('PCA1')
 plt.ylabel('PCA2')
 plt.legend()
@@ -147,3 +150,8 @@ for i,j in enumerate(np.unique(y_display)):
                 c = ListedColormap(('red', 'green', 'blue'))(i), 
                 label = classIds[j]
     )
+plt.title('KNN on training set')  
+plt.xlabel('PCA1')
+plt.ylabel('PCA2')
+plt.legend()
+plt.show()
