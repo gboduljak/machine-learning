@@ -11,6 +11,7 @@ from sklearn.model_selection import GridSearchCV, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.decomposition import PCA
 from matplotlib.colors import ListedColormap
 
@@ -144,12 +145,33 @@ bestCriterion  = gridSearchCV.best_estimator_.criterion
 randomForestModel = RandomForestClassifier(n_estimators = bestEstimators, max_depth = bestMaxDepth, criterion = bestCriterion)
 randomForestModel.fit(X_train, y_train)
 
+# Select best neural network model
+possibleNeuralNetworkParameters = [{  
+        'hidden_layer_sizes' : [(100), (500), (100, 100), (250,250), (100,100,50), (100,250,50), (250,250,100)],
+        'activation' :['relu', 'logistic'],
+        'alpha' : [0.00001, 0.0001, 0.001, 0.01],
+        'learning_rate' : ['constant', 'adaptive']
+}]
+
+neuralNetworkModel = MLPClassifier()
+
+gridSearchCV = GridSearchCV(estimator = neuralNetworkModel, param_grid = possibleNeuralNetworkParameters)
+gridSearchCV.fit(X_train, y_train).score(X_test, y_test)
+
+neuralNetworkModel = MLPClassifier(
+        hidden_layer_sizes  = gridSearchCV.best_estimator_.hidden_layer_sizes, 
+        activation          = gridSearchCV.best_estimator_.activation, 
+        alpha               = gridSearchCV.best_estimator_.alpha,
+        learning_rate       = gridSearchCV.best_estimator_.learning_rate
+) 
+neuralNetworkModel.fit(X_train, y_train)
 
 # Display models score reports
 
 plotModelScore(svcModel, X_test, y_test, 'SVC model performance')
 plotModelScore(knnModel, X_test, y_test, 'KNN model performance')
 plotModelScore(randomForestModel, X_test, y_test, 'Random forest model performance')
+plotModelScore(neuralNetworkModel, X_test, y_test, 'Neural Network model performance')
 
 
 # Display models decisions boundaries
@@ -160,10 +182,11 @@ pca.fit(X_train)
 X_display = pca.transform(X_train)
 y_display = y_train
     
-svcModel = SVC(C = bestC, gamma = bestGamma)
 svcModel.fit(X_display, y_display)
 knnModel.fit(X_display, y_display)
 randomForestModel.fit(X_display, y_display)
+neuralNetworkModel.fit(X_display, y_display)
+
 
 plotDecisionBoundary(
         classifier = svcModel, 
@@ -201,6 +224,21 @@ plotDecisionBoundary(
         y = y_display, 
         colorMap = ListedColormap(['red', 'green', 'blue']), 
         title = 'Random forest on training set', 
+        featureX = 'PCA 1',
+        featureY = 'PCA 2',
+        labels = {
+                0 : 'Iris-setosa',
+                1 : 'Iris-virginica', 
+                2 : 'Iris-versicolor'
+        }
+)
+
+plotDecisionBoundary(
+        classifier = neuralNetworkModel, 
+        X = X_display, 
+        y = y_display, 
+        colorMap = ListedColormap(['red', 'green', 'blue']), 
+        title = 'Neural network on training set', 
         featureX = 'PCA 1',
         featureY = 'PCA 2',
         labels = {
