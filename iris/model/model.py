@@ -49,7 +49,6 @@ def plotDecisionBoundary (classifier, X, y, colorMap, labels, title = 'decision 
     
 # Define model score display method
 def plotModelScore(classifier, X, y, modelName = 'model'):
-    classifier.fit(X, y)
     predictions = classifier.predict(X)
     classificationReport = classification_report(y_test, predictions)
     confusionMatrix = confusion_matrix(y_test, predictions)
