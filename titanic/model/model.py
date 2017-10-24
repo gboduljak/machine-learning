@@ -73,7 +73,7 @@ def produce_new_features(dataset):
 
 
 
-def preprocess_and_clean(dataset):     
+def preprocess_and_clean(dataset, isTestDataset = False):     
     dataset['Embarked'] = dataset['Embarked'].fillna(dataset.Embarked.dropna().mode()[0])
     dataset['Fare'].fillna(dataset['Fare'].dropna().median(), inplace=True)
 
@@ -89,7 +89,7 @@ def preprocess_and_clean(dataset):
     produce_new_features(dataset)
     extract_social_category_from_name_title(dataset)
     
-    dataset.drop(['Name','Ticket','Cabin', 'Sex', 'Embarked', 'SibSp', 'Parch', 'FamilySize', 'PassengerId'], 1, inplace=True)
+    #dataset.drop(['Name','Ticket','Cabin', 'Sex', 'Embarked', 'SibSp', 'Parch', 'FamilySize', 'PassengerId'], 1, inplace=True)
     #0.83426, 0.8118
     
     #dataset.drop(['Name','Ticket','Cabin', 'Sex', 'Embarked', 'SibSp', 'Parch', 'FamilySize', 'PassengerId', 'Age'], 1, inplace=True)
@@ -99,11 +99,22 @@ def preprocess_and_clean(dataset):
     
     #dataset.drop(['Name','Ticket','Cabin', 'Sex', 'Embarked', 'SibSp', 'Parch', 'FamilySize', 'PassengerId', 'Age', 'Fare'], 1, inplace=True)
     #0.83636, 0.81958
- 
-#age category problem  
     
+    if isTestDataset == False:
+        dataset.drop(['PassengerId','Name','Ticket','Cabin', 'Sex', 'SibSp', 'Parch',  'Embarked', 'FamilySize'], 1, inplace=True)
+    else:
+        dataset.drop(['PassengerId','Name','Ticket','Cabin', 'Sex', 'SibSp', 'Parch', 'Embarked', 'FamilySize'], 1, inplace=True)
+ 
+def predict_submission_with_model(model, modelName):
+    predictions = {
+        'PassengerId' : testDataset['PassengerId'].values,
+        'Survived' : model.predict(testDataset)
+    }
+    submissionFrame = DataFrame(data = predictions)
+    submissionFrame.to_csv(modelName + '-submission.csv', index = False)
+
 preprocess_and_clean(trainDataset)
-preprocess_and_clean(testDataset)
+preprocess_and_clean(testDataset, isTestDataset = True)
 
 #Visualize 
 plt, grid = plt.subplots(nrows = 2, ncols = 2 ,figsize=(15,10))
@@ -125,16 +136,17 @@ trainDataset[['IsAlone', 'Survived']].groupby(['IsAlone'], as_index=False).mean(
 X = trainDataset.loc[:, trainDataset.columns != 'Survived']
 y = trainDataset['Survived'].values
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.2, random_state = 0)
-
 CV = ShuffleSplit(n_splits=10, test_size=0.2, random_state=0)
 
 
 #Train Random Forest model
 randomForestModels = {
-    'n_estimators' : [10, 80, 100, 200],
+    'n_estimators' : [10, 50, 80, 100, 200],
     'criterion' : ['gini','entropy'],
     'random_state' : [0],
-    'min_samples_leaf' : [5, 10, 15, 20]
+    'max_features': ['sqrt', 'auto', 'log2'],
+    'min_samples_leaf': [1, 3, 10],
+    'bootstrap': [True, False],
 }
 
 randomForestModel = RandomForestClassifier()
@@ -166,7 +178,6 @@ svmGridSearch.fit(X_train, y_train).score(X_test, y_test)
 print(svmGridSearch.best_score_)
 svmGridSearch.best_estimator_.get_params()
 
-
 possibleNeuralNetworkParameters = [{  
         'hidden_layer_sizes' : [1000, (200,250,200)],
         'activation' :['relu'],
@@ -175,16 +186,12 @@ possibleNeuralNetworkParameters = [{
 }]
 
 neuralNetworkModel = MLPClassifier()
-
 neuralNetworkSearch = GridSearchCV(estimator = neuralNetworkModel, param_grid = possibleNeuralNetworkParameters, cv = CV)
 neuralNetworkSearch.fit(X_train, y_train).score(X_test, y_test)
 print(neuralNetworkSearch.best_score_)
 neuralNetworkSearch.best_estimator_.get_params()
 
-#Save Random forest test
-predictions = {
-   'PassengerId' : testDataset['PassengerId'].values,
-   'Survived' : randomForestGridSearch.best_estimator_.predict(testDataset.loc[:, testDataset.columns != 'Survived'])
-}
-submissionFrame = DataFrame(data = predictions)
-submissionFrame.to_csv('submission.csv', index = False)
+
+predict_submission_with_model(randomForestGridSearch.best_estimator_, 'random-forest')
+predict_submission_with_model(svmGridSearch.best_estimator_, 'svc')
+predict_submission_with_model(neuralNetworkSearch.best_estimator_, 'neural-network')
