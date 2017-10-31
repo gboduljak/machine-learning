@@ -124,9 +124,9 @@ def preprocess_and_clean(dataset, isTestDataset = False):
     
     
     if isTestDataset == False:
-        dataset.drop(['Name','Ticket', 'Sex', 'Embarked', 'SibSp', 'Parch', 'FamilySize', 'PassengerId'], 1, inplace=True)
+        dataset.drop(['Name','Ticket', 'Sex', 'Embarked', 'SibSp', 'Parch', 'FamilySize', 'Age', 'Fare', 'PassengerId'], 1, inplace=True)
     else:
-        dataset.drop(['Name','Ticket', 'Sex', 'Embarked', 'SibSp', 'Parch', 'FamilySize'], 1, inplace=True)
+        dataset.drop(['Name','Ticket', 'Sex', 'Embarked', 'SibSp', 'Parch', 'FamilySize', 'Age', 'Fare'], 1, inplace=True)
  
 def predict_submission_with_model(model, modelName):
     predictions = {
@@ -173,7 +173,7 @@ randomForestModels = {
 
 randomForestModel = RandomForestClassifier()
 
-randomForestGridSearch = GridSearchCV(estimator = randomForestModel, param_grid = randomForestModels, cv = CV, n_jobs = 5)
+randomForestGridSearch = GridSearchCV(estimator = randomForestModel, param_grid = randomForestModels, cv = CV, n_jobs = 10)
 randomForestGridSearch.fit(X_train, y_train).score(X_test, y_test)
 print(randomForestGridSearch.best_score_)
 randomForestGridSearch.best_estimator_.get_params()
@@ -185,7 +185,7 @@ features.sort_values(by=['importance'], ascending=True, inplace=True)
 features.set_index('feature', inplace=True)
 features.plot(kind='barh', figsize=(20, 20))
 
-plot_learning_curve(estimator = randomForestGridSearch.best_estimator_, title = 'Random Forest', X = X_train, y = y_train)
+plot_learning_curve(estimator = randomForestGridSearch.best_estimator_, title = 'Random forest', X = X_train, y = y_train)
 
 #Train SVM  model
 svmModels = [
