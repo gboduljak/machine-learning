@@ -90,5 +90,20 @@ def fill_missing_age(dataset):
         if (not np.isfinite(row.Age)):
             dataset.set_value(index, 'Age', predictions[index])
 
+def fill_missing_fare(dataset):
+    clearDataset = copy.deepcopy(dataset.drop(['Embarked', 'Cabin', 'Ticket', 'Sex', 'Name'], axis=1))
+
+    clearDataset.dropna(inplace=True)
+    X = copy.deepcopy(clearDataset.loc[:, clearDataset.columns != 'Fare'])
+    y = copy.deepcopy(clearDataset.loc[:, clearDataset.columns == 'Fare'])
+
+    tree = DecisionTreeRegressor()
+    tree.fit(X, y)
+    predictions = tree.predict(dataset.drop(['Embarked', 'Cabin', 'Ticket', 'Sex', 'Name', 'Fare'], axis=1))
+
+    for index, row in dataset.iterrows():
+        if (not np.isfinite(row.Age)):
+            dataset.set_value(index, 'Fare', predictions[index])
+
 def reduce_fare_skew(dataset):
     dataset["Fare"] = dataset["Fare"].map(lambda i: np.log(i) if i > 0 else 0)

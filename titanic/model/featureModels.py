@@ -9,5 +9,5 @@ class featureModel:
     def getDatasets(self):
         return {
             'train' : self.trainDataset.drop(self.featureExcludes, axis=1),
-            'submission' : []
+            'submission' : self.submissionDataset.drop(self.featureExcludes, axis = 1)
         }
