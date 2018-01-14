@@ -2,6 +2,7 @@ import os, shutil
 import os.path as path
 
 resourcesPath = path.join(os.getcwd(), 'datasets/training/all')
+fullPath = path.join(os.getcwd(), 'datasets/training/full')
 trainPath = path.join(os.getcwd(), 'datasets/training/train')
 validationPath = path.join(os.getcwd(), 'datasets/training/validation')
 testPath = path.join(os.getcwd(), 'datasets/training/test')
@@ -44,4 +45,15 @@ for testCat in testCatNames:
 for testDog in testDogNames:
     src = path.join(resourcesPath, testDog)
     dst = path.join(testPath + '/dog', testDog)
+    shutil.copyfile(src, dst)
+
+
+for trainCat in ['cat.{}.jpg'.format(i) for i in range(12500)]:
+    src = path.join(resourcesPath, trainCat)
+    dst = path.join(fullPath + '/cat', trainCat)
+    shutil.copyfile(src, dst)
+
+for trainDog in ['dog.{}.jpg'.format(i) for i in range(12500)]:
+    src = path.join(resourcesPath, trainDog)
+    dst = path.join(fullPath + '/dog', trainDog)
     shutil.copyfile(src, dst)
