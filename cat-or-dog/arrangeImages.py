@@ -48,12 +48,32 @@ for testDog in testDogNames:
     shutil.copyfile(src, dst)
 
 
-for trainCat in ['cat.{}.jpg'.format(i) for i in range(12500)]:
+for trainCat in ['cat.{}.jpg'.format(i) for i in range(6000)]:
     src = path.join(resourcesPath, trainCat)
-    dst = path.join(fullPath + '/cat', trainCat)
+    dst = path.join(fullPath + '/train/cat', trainCat)
     shutil.copyfile(src, dst)
 
-for trainDog in ['dog.{}.jpg'.format(i) for i in range(12500)]:
+for trainDog in ['dog.{}.jpg'.format(i) for i in range(6000)]:
     src = path.join(resourcesPath, trainDog)
-    dst = path.join(fullPath + '/dog', trainDog)
+    dst = path.join(fullPath + '/train/dog', trainDog)
+    shutil.copyfile(src, dst)
+
+for trainCat in ['cat.{}.jpg'.format(i) for i in range(6000, 10000)]:
+    src = path.join(resourcesPath, trainCat)
+    dst = path.join(fullPath + '/validation/cat', trainCat)
+    shutil.copyfile(src, dst)
+
+for trainDog in ['dog.{}.jpg'.format(i) for i in range(6000, 10000)]:
+    src = path.join(resourcesPath, trainDog)
+    dst = path.join(fullPath + '/validation/dog', trainDog)
+    shutil.copyfile(src, dst)
+
+for trainCat in ['cat.{}.jpg'.format(i) for i in range(10000, 12500)]:
+    src = path.join(resourcesPath, trainCat)
+    dst = path.join(fullPath + '/test/cat', trainCat)
+    shutil.copyfile(src, dst)
+
+for trainDog in ['dog.{}.jpg'.format(i) for i in range(10000, 12500)]:
+    src = path.join(resourcesPath, trainDog)
+    dst = path.join(fullPath + '/test/dog', trainDog)
     shutil.copyfile(src, dst)
