@@ -1,13 +1,19 @@
-from sklearn.metrics import roc_auc_score
 from keras.callbacks import Callback
+from sklearn.metrics import roc_auc_score
+
+currentEpoch = 0
 
 class RocAucCallback(Callback):
-    def __init__(self,training_data,validation_data):
+    def __init__(self, training_data, validation_data, runEvery = 2):
         self.x = training_data[0]
         self.y = training_data[1]
         self.x_val = validation_data[0]
         self.y_val = validation_data[1]
+        self.runEvery = runEvery
 
+        global currentEpoch
+
+        currentEpoch = 0
 
     def on_train_begin(self, logs={}):
         return
@@ -19,11 +25,19 @@ class RocAucCallback(Callback):
         return
 
     def on_epoch_end(self, epoch, logs={}):
+        global currentEpoch
+        currentEpoch = currentEpoch + 1
+
+        if (currentEpoch % self.runEvery != 0):
+            return
+
         y_pred = self.model.predict(self.x)
-        roc = roc_auc_score(self.y, y_pred)
         y_pred_val = self.model.predict(self.x_val)
+        roc = roc_auc_score(self.y, y_pred)
         roc_val = roc_auc_score(self.y_val, y_pred_val)
-        print('\rroc-auc: %s - roc-auc_val: %s' % (str(round(roc,4)),str(round(roc_val,4))),end=100*' '+'\n')
+
+        print('\rroc-auc: %s - roc-auc_val: %s' % (str(round(roc, 4)), str(round(roc_val, 4))), end=100 * ' ' + '\n')
+
         return
 
     def on_batch_begin(self, batch, logs={}):
