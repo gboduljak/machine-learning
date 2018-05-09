@@ -7,6 +7,9 @@ from roc_auc_callback import RocAucCallback
 from keras.callbacks import *
 from sklearn.metrics import roc_auc_score
 
+import numpy as np
+X_submission = np.load('X_submission.npy')
+
 # In[2]:
 
 import math
@@ -25,8 +28,8 @@ def step_decay(epoch):
 
 lrScheduler = LearningRateScheduler(step_decay)
 
-
 # In[3]:
+
 
 def train_with_cv(model, batchSize=32, epochs=32, rocEvery=2, patience=10, shouldValidate=True):
     X_train = np.load('X_train.npy')
@@ -42,8 +45,10 @@ def train_with_cv(model, batchSize=32, epochs=32, rocEvery=2, patience=10, shoul
         mode='auto'
     )
 
-    rocAuc = RocAucCallback(training_data=(X_train, y_train), validation_data=(X_val, y_val), runEvery=rocEvery)
-    reduceLr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, verbose=1, cooldown=10, mode='auto')
+    rocAuc = RocAucCallback(training_data=(
+        X_train, y_train), validation_data=(X_val, y_val), runEvery=rocEvery)
+    reduceLr = ReduceLROnPlateau(
+        monitor='val_loss', factor=0.5, patience=2, verbose=1, cooldown=10, mode='auto')
     modelCheckpoint = ModelCheckpoint('/model.h5', monitor='val_loss')
 
     if (shouldValidate):
@@ -53,7 +58,8 @@ def train_with_cv(model, batchSize=32, epochs=32, rocEvery=2, patience=10, shoul
             batch_size=batchSize,
             epochs=epochs,
             validation_data=(X_val, y_val),
-            callbacks=[lrScheduler, reduceLr, earlyStopping, modelCheckpoint, rocAuc]
+            callbacks=[lrScheduler, reduceLr,
+                       earlyStopping, modelCheckpoint, rocAuc]
         )
     else:
         return model.fit(
@@ -64,20 +70,23 @@ def train_with_cv(model, batchSize=32, epochs=32, rocEvery=2, patience=10, shoul
             callbacks=[lrScheduler, reduceLr]
         )
 
+
 def evaluate_on_test(model):
     X_test = np.load('X_test.npy')
     y_test = np.load('y_test.npy')
 
-    metrics = model.evaluate(x = X_test, y = y_test, batch_size = 32)
+    metrics = model.evaluate(x=X_test, y=y_test, batch_size=32)
     rocAuc = roc_auc_score(y_test, model.predict(X_test))
 
     return metrics, rocAuc
 
 # In[4]:
 
+
 import pandas as pd
 
-labels = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+labels = ["toxic", "severe_toxic", "obscene",
+          "threat", "insult", "identity_hate"]
 
 currentPrediction = 0
 loPrediction = 0
@@ -93,10 +102,12 @@ def submission_on_epoch_end(epoch, logs):
     global labels
     global predictionModel
     global predictionModelName
+    global X_submission
 
     if currentPrediction >= loPrediction and currentPrediction <= hiPrediction:
         print('Predicting on submission...\n')
-        submissionFilename = '{}-{}.csv'.format(predictionModelName, currentPrediction)
+        submissionFilename = '{}-{}.csv'.format(
+            predictionModelName, currentPrediction)
         submissionFrame = pd.read_csv('sample_submission.csv')
         predictions = predictionModel.predict(X_submission, batch_size=32)
         submissionFrame[labels] = predictions
@@ -105,11 +116,14 @@ def submission_on_epoch_end(epoch, logs):
 
     currentPrediction = currentPrediction + 1
 
-predictSubmissionCallback = LambdaCallback(on_epoch_end=submission_on_epoch_end)
+
+predictSubmissionCallback = LambdaCallback(
+    on_epoch_end=submission_on_epoch_end)
 
 # In[5]:
 
-def train_with_submitting(model, epochs = 16, predictAfter = 5, predictBefore = 10):
+
+def train_with_submitting(model, epochs=16, predictAfter=5, predictBefore=10):
     global currentPrediction
     global predictionModel
     global loPrediction
@@ -125,7 +139,8 @@ def train_with_submitting(model, epochs = 16, predictAfter = 5, predictBefore = 
     hiPrediction = predictBefore
 
     modelCheckpoint = ModelCheckpoint('/model.h5', monitor='loss')
-    tensorboard = TensorBoard('/model/tensorboard/', embeddings_layer_names=['embedding_1'])
+    tensorboard = TensorBoard('/model/tensorboard/',
+                              embeddings_layer_names=['embedding_1'])
 
     return predictionModel.fit(
         X_train_full,
