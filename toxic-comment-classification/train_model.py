@@ -123,7 +123,7 @@ predictSubmissionCallback = LambdaCallback(
 # In[5]:
 
 
-def train_with_submitting(model, epochs=16, predictAfter=5, predictBefore=10):
+def train_with_submitting(model, epochs=16, batchSize=32, predictAfter=5, predictBefore=10):
     global currentPrediction
     global predictionModel
     global loPrediction
@@ -145,7 +145,7 @@ def train_with_submitting(model, epochs=16, predictAfter=5, predictBefore=10):
     return predictionModel.fit(
         X_train_full,
         y_train_full,
-        batch_size=32,
+        batch_size=batchSize,
         epochs=epochs,
         callbacks=[modelCheckpoint, tensorboard, predictSubmissionCallback]
     )
