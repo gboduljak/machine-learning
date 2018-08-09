@@ -1,0 +1,239 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="./styles/style.css" rel="stylesheet" />
+  <link href="./styles/spinner.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300|Roboto+Mono:300,500|Roboto+Slab:300" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <div>
+      <img src="./assets/ai.png" />
+    </div>
+    <div>
+      <h1>Toxicity Analysis</h1>
+    </div>
+  </header>
+  <main>
+    <section class="overview">
+      <article></article>
+      <article>
+        <form>
+          <div style="display: none;">
+            <i class="dot"></i>
+            <strong>toxic</strong>
+          </div>
+          <textarea maxlength="3000" placeholder="Write some text here..."></textarea>
+        </form>
+      </article>
+      <article>
+        <form>
+          <div>
+            <h3>Analysis results
+            </h3>
+            <div class="spinner" style="display: none;">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <canvas id="overall-chart" width="400" height="400"></canvas>
+          </div>
+        </form>
+      </article>
+      <article>
+        <form>
+          <div>
+            <h3>Toxicity per word</h3>
+            <div class="spinner" style="display: none;">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <ul>
+              <li>Results will appear here :) </li>
+            </ul>
+          </div>
+        </form>
+      </article>
+      <article></article>
+    </section>
+
+    <header class="background">
+      <div>
+        <img src="./assets/ai.png" />
+      </div>
+      <div>
+        <h2>Models Overview</h2>
+      </div>
+    </header>
+
+    <section class="models">
+      <article>
+        <h1>ResNet inspired CNN #1</h1>
+        <hr/>
+        <div>
+          <div>
+            <img style="width:400px; height: 600px;" src="./assets/resnet-1.png" />
+            <small>ResNET #1 architecture's schema.</small>
+            <ul>
+              <li>
+                <strong>Hyperparameters:</strong>
+              </li>
+              <li> In all residual blocks,
+                <strong>ELU activation is used after BatchNormalization</strong>.
+              </li>
+              <li> In two fully connected blocks,
+                <strong>ELU activation is used after BatchNormalization</strong>.
+              </li>
+              <li> Last fully connected block is activated with
+                <strong>sigmoid</strong> which can be viewed as percentage of each toxicity category.
+              </li>
+              <li>Dropout rate is a constant of
+                <strong>0.2</strong>. Between resnet blocks and embedding layer
+                <strong>spatial</strong> dropout is used instead of vanilla.
+              </li>
+              <li>Optimizer used for training is Adam with scheduled learning rate decay.</li>
+              <li>
+                Training was done for
+                <strong>64 epochs</strong> with
+                <strong>batches of 32</strong> texts.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p>
+              Model was inspired by
+              <a href="https://ai.tencent.com/ailab/media/publications/ACL3-Brady.pdf">DPCNN</a>. Instead of using DPCNN filter of size 3, this models uses
+              <strong>filter size 1</strong> convolutions in all layers.
+              <br>
+              <br> Before any of those layers, there are two embedding layers, each of them is 300 dimensional. First embedding
+              layer has weights loaded from pretrained
+              <strong>FastText</strong> corpus, while second embedding layer was pretrained only on provided dataset.
+              <br>
+              <br> This model is comprised of
+              <strong>5 residual blocks</strong>. Each residual block is comprised of two convolutional layers. Both convolutional
+              layers produce
+              <strong>64</strong> feature maps and are connected with
+              <strong>direct add skip connection</strong>. Each residual block's input is connected with each residual block's output
+              via add skip connection
+              <strong>resembling ResNet identity mapping</strong>.
+              <br>
+              <br> After residual blocks, there is a 'pre-classification' block comprised of various convolutional layers whose
+              outputs are fed to
+              <strong>GlobalMaxPooling()</strong> layer. Convolutional layers are
+              <strong>1,2,3 and 5 filter-sized</strong>. All of GlobalMaxPooling layers are concatenated together. This block resembles
+              <a href="https://arxiv.org/abs/1408.5882">Yoon Kim's text CNN</a>.
+              <br>
+              <br> The 'pre-classification' output vector is sent to
+              <strong> double 256 dimensional fully connected </strong>layer whose end product is 6 dimensional vector of toxicity
+              categories.
+              <div>
+                <img src="./assets/resnet-64-training.png" />
+                <small style="margin-top:10px;">Training/Validation loss and accuracy over time.</small>
+              </div>
+            </p>
+          </div>
+          <div class="results" style="visibility: hidden;">
+            <div>
+              <h3>Results will appear here :)
+                <small></small>
+              </h3>
+              <canvas id="resnet-1-chart" width="400" height="400" style="max-width:400px;max-height:400px;display:none;"></canvas>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article>
+        <h1>ResNet inspired CNN #2</h1>
+        <hr/>
+        <div>
+          <div>
+            <img style="width:400px; height: 600px;" src="./assets/resnet-2.png" />
+            <small style="margin-top:10px;">ResNET #2 architecture's schema.</small>
+            <small>Hyperparameters are same as #1 model's.</small>
+          </div>
+          <div>
+            <p>
+              This model is almost same as ResNet #1. There are minor differences, each residual block is comprised of convolutions with
+              <strong>128 filters instead of 64 filters</strong> as in first model.
+              <br>
+              <br>
+              <div>
+                <img src="./assets/resnet-128-training.png" />
+                <small style="margin-top:10px;">Training/Validation loss and accuracy over time.</small>
+              </div>
+            </p>
+          </div>
+          <div class="results" style="visibility: hidden;">
+            <div>
+              <h3>Results will appear here :)
+                <small></small>
+              </h3>
+              <canvas id="resnet-2-chart" width="400" height="400" style="max-width:400px;max-height:400px;display:none;"></canvas>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article>
+        <h1>Other models</h1>
+        <hr/>
+        <div>
+          <p>
+            These models are not present in this applications because they cannot be run on CPU. Those are:
+            <br>
+            <br>
+          </p>
+          <div>
+            <ul>
+              <li>
+                <a href="https://www.perspectiveapi.com/#/">Pooled GRU</a>
+              </li>
+              <li>
+                <a href="https://www.perspectiveapi.com/#/">Pooled GRU with ResNet after</a>
+              </li>
+              <li>
+                <a href="https://www.perspectiveapi.com/#/">Recurrent Convolutional LSTM</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </section>
+    <article>
+      <form>
+        <hr>
+        <h2>References</h2>
+        <ul>
+          <li>
+            <a href="https://www.perspectiveapi.com/#/">Perspective API</a>
+          </li>
+          <li>
+            <a href="https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge">Kaggle Competition</a>
+          </li>
+          <li>
+            <a href="https://ai.tencent.com/ailab/media/publications/ACL3-Brady.pdf">DPCNN Paper</a>
+          </li>
+          <li>
+            <a href="https://arxiv.org/abs/1512.03385">ResNET Paper</a>
+          </li>
+          <li>
+            <a href="https://arxiv.org/abs/1408.5882">Yoon Kim's Paper</a>
+          </li>
+          <li>
+            <a href="#">Github Repo</a>
+          </li>
+        </ul>
+        <small> Design is inspired by Perspective Api.</small>
+      </form>
+      <form></form>
+    </article>
+  </main>
+  <script src="./app.js"></script>
+
+</body>
+
+</html>

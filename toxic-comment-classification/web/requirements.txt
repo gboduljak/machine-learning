@@ -1,0 +1,10 @@
+keras
+tensorflow
+flask
+flask_cors
+json
+numpy
+nltk 
+pickle
+pathlib
+re

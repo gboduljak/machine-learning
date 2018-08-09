@@ -49,8 +49,14 @@ def train_with_cv(model, batchSize=32, epochs=32, rocEvery=2, patience=10, shoul
         X_train, y_train), validation_data=(X_val, y_val), runEvery=rocEvery)
     reduceLr = ReduceLROnPlateau(
         monitor='val_loss', factor=0.5, patience=2, verbose=1, cooldown=10, mode='auto')
-    modelCheckpoint = ModelCheckpoint('/model.h5', monitor='val_loss')
 
+    modelCheckpoint = ModelCheckpoint(
+        'model-{epoch:02d}-{val_loss:.2f}.hdf5',
+        monitor='val_loss',
+        verbose=1,
+        save_best_only=False,
+        mode='min'
+    )
     if (shouldValidate):
         return model.fit(
             X_train,
@@ -67,7 +73,7 @@ def train_with_cv(model, batchSize=32, epochs=32, rocEvery=2, patience=10, shoul
             y_train,
             batch_size=batchSize,
             epochs=epochs,
-            callbacks=[lrScheduler, reduceLr]
+            callbacks=[lrScheduler, reduceLr, modelCheckpoint]
         )
 
 
