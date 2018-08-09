@@ -1,0 +1,41 @@
+@media only screen and (max-width: 600px) {
+  .models article div {
+    margin-bottom: 50px;
+  }
+  .models article img {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .overview section {
+    display: block;
+  }
+  .overview article {
+    width: 100%;
+  }
+  .overview form {
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top: 30px;
+  }
+  .models article img {
+    width: 400px;
+    height: 150px;
+  }
+}
+
+@media only screen and (max-width: 1400px) {
+  .models article {
+    flex: 1 1 500px;
+  }
+}
+
+.models article:last-of-type {
+  flex: 1 1 auto;
+}
+
+.references form {
+  border-radius: 0px;
+  margin-bottom: 0px;
+}

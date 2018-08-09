@@ -1,0 +1,46 @@
+.models {
+  background: white;
+  flex-direction: column;
+}
+
+.models article {
+  flex: 1 1 500px;
+  padding-left: 40px;
+}
+
+.models article div {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.models article div>div {
+  flex: 1 1 300px;
+  padding-left: 10px;
+}
+
+.models article img {
+  width: 700px;
+  height: 350px;
+}
+
+.models .results div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.models ul {
+  list-style-type: none;
+  text-align: left;
+  font-size: 16px;
+  padding: 0;
+}
+
+.models ul li {
+  margin: 5px;
+}

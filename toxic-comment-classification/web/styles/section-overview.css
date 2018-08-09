@@ -1,0 +1,55 @@
+.overview form {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.overview article:nth-of-type(3) {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.overview article:nth-of-type(3) form div {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.overview article:nth-of-type(4) form div {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.overview article:nth-of-type(4) form div h3 {
+  text-align: center;
+}
+
+.overview article:nth-of-type(4) ul {
+  padding: 0;
+}
+
+.overview article:nth-of-type(4) ul li {
+  list-style-type: none;
+  color: black;
+  border-bottom: 2px solid white;
+  width: 100%;
+}
+
+.overview article:nth-of-type(4) ul li>div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.overview article:nth-of-type(4) ul li>div>div:first-of-type {
+  font-weight: bold;
+}
